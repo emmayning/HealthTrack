@@ -1,12 +1,12 @@
 import Dexie, { type Table } from 'dexie';
 import type { HealthEntry, AppSettings } from '../types';
 
-class HeartTrackDB extends Dexie {
+class HealthTrackDB extends Dexie {
   entries!: Table<HealthEntry, number>;
   settings!: Table<{ key: string; value: string }, string>;
 
   constructor() {
-    super('hearttrack-db');
+    super('healthtrack-db');
     this.version(1).stores({
       entries: '++id, &date',
       settings: 'key',
@@ -14,7 +14,7 @@ class HeartTrackDB extends Dexie {
   }
 }
 
-const db = new HeartTrackDB();
+const db = new HealthTrackDB();
 
 export async function getAllEntries(): Promise<HealthEntry[]> {
   const all = await db.entries.toArray();

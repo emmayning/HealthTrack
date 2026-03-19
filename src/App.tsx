@@ -51,7 +51,7 @@ export default function App() {
       <div className="app">
         <header className="app-header">
           <div>
-            <h1 className="app-title">HeartTrack</h1>
+            <h1 className="app-title">HealthTrack</h1>
           </div>
           <button
             className="settings-toggle"

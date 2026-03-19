@@ -19,7 +19,7 @@ export async function exportBackup(): Promise<void> {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `hearttrack-backup-${backup.exportedAt.slice(0, 10)}.json`;
+  a.download = `healthtrack-backup-${backup.exportedAt.slice(0, 10)}.json`;
   a.click();
   URL.revokeObjectURL(url);
 }

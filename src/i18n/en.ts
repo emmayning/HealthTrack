@@ -1,6 +1,6 @@
 const en: Record<string, string> = {
   // App
-  'app.title': 'HeartTrack',
+  'app.title': 'HealthTrack',
   'app.subtitle': 'Health Metrics Tracker',
 
   // Disclaimer

@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(grep -E \"bin/node$\")",
+      "Bash(eval '$\\(/opt/homebrew/bin/brew shellenv\\)')",
+      "Bash(cp -r hearttrack-temp/* hearttrack-temp/.gitignore hearttrack-temp/.eslintrc.cjs .)",
+      "Bash(cp -r hearttrack-temp/* .)",
+      "Bash(cp -r hearttrack-temp/* hearttrack-temp/.gitignore .)",
+      "Bash(rm -rf hearttrack-temp)",
+      "Bash(rm -f src/assets/react.svg src/assets/vite.svg src/assets/hero.png)",
+      "Bash(rmdir src/assets)",
+      "mcp__Claude_Preview__preview_start"
+    ]
+  }
+}

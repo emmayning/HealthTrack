@@ -1,6 +1,6 @@
 const zh: Record<string, string> = {
   // App
-  'app.title': 'HeartTrack',
+  'app.title': 'HealthTrack',
   'app.subtitle': '健康指标追踪',
 
   // Disclaimer

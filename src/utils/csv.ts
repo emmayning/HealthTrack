@@ -41,7 +41,7 @@ export function entriesToCSV(entries: HealthEntry[], weightUnit: WeightUnit): st
   return [headers.join(','), ...rows].join('\n');
 }
 
-export function downloadCSV(csv: string, filename = 'hearttrack-export.csv') {
+export function downloadCSV(csv: string, filename = 'healthtrack-export.csv') {
   const bom = '\uFEFF';
   const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8' });
   const url = URL.createObjectURL(blob);
