@@ -1,0 +1,96 @@
+.chart-section {
+  background: var(--color-card);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.chart-section h3 {
+  font-size: 1rem;
+  margin: 0 0 10px 0;
+  color: var(--color-text);
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.chart-header h3 {
+  margin: 0;
+}
+
+.chart-no-data {
+  text-align: center;
+  color: var(--color-text-secondary);
+  padding: 30px 0;
+  font-size: 0.85rem;
+}
+
+.range-filter {
+  display: flex;
+  gap: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  margin-bottom: 14px;
+}
+
+.range-filter button {
+  padding: 6px 14px;
+  border: none;
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.range-filter button.active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.range-filter button:not(:last-child) {
+  border-right: 1px solid var(--color-border);
+}
+
+.chart-tooltip {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tooltip-date {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 4px;
+}
+
+.tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+}
+
+.tooltip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tooltip-label {
+  color: var(--color-text-secondary);
+}
+
+.tooltip-value {
+  font-weight: 600;
+  color: var(--color-text);
+}

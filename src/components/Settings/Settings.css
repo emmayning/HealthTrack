@@ -1,0 +1,51 @@
+.settings {
+  background: var(--color-card);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.settings-title {
+  font-size: 1.1rem;
+  margin: 0 0 12px 0;
+  color: var(--color-text);
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+.settings-row label {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.toggle-group {
+  display: flex;
+  gap: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.toggle-group button {
+  padding: 6px 14px;
+  border: none;
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.toggle-group button.active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.toggle-group button:not(:last-child) {
+  border-right: 1px solid var(--color-border);
+}

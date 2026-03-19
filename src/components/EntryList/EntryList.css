@@ -1,0 +1,93 @@
+.entry-list {
+  margin-bottom: 16px;
+}
+
+.entry-list h2 {
+  font-size: 1.1rem;
+  margin: 0 0 12px 0;
+  color: var(--color-text);
+}
+
+.list-empty {
+  text-align: center;
+  color: var(--color-text-secondary);
+  padding: 24px 0;
+  font-size: 0.9rem;
+}
+
+.list-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.entry-card {
+  background: var(--color-card);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.entry-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.entry-date {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--color-primary);
+}
+
+.entry-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-sm {
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.btn-sm.btn-danger {
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+.entry-card-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.entry-metric {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-label {
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.metric-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.entry-notes {
+  width: 100%;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  font-style: italic;
+  margin-top: 4px;
+}
