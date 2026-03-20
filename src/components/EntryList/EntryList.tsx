@@ -23,7 +23,8 @@ export default function EntryList({ entries, onEdit, onDelete, weightUnit }: Pro
     );
   }
 
-  const handleDelete = (date: string) => {
+  const handleDelete = (e: React.MouseEvent, date: string) => {
+    e.stopPropagation(); // Don't trigger card tap → edit
     if (window.confirm(t('list.confirmDelete'))) {
       onDelete(date);
     }
@@ -32,18 +33,24 @@ export default function EntryList({ entries, onEdit, onDelete, weightUnit }: Pro
   return (
     <div className="entry-list">
       <h2>{t('list.title')}</h2>
+      <p className="list-edit-hint">{t('list.editHint')}</p>
       <div className="list-cards">
         {entries.map((entry) => (
-          <div key={entry.date} className="entry-card">
+          <div
+            key={entry.date}
+            className="entry-card entry-card-tappable"
+            onClick={() => onEdit(entry.date)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onEdit(entry.date); }}
+          >
             <div className="entry-card-header">
               <span className="entry-date">{toShortLabel(entry.date)}</span>
               <div className="entry-actions">
-                <button className="btn-sm" onClick={() => onEdit(entry.date)}>
-                  {t('list.edit')}
-                </button>
+                <span className="entry-tap-hint">{t('list.tapToEdit')}</span>
                 <button
                   className="btn-sm btn-danger"
-                  onClick={() => handleDelete(entry.date)}
+                  onClick={(e) => handleDelete(e, entry.date)}
                 >
                   {t('list.delete')}
                 </button>

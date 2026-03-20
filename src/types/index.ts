@@ -21,6 +21,12 @@ export interface AppSettings {
 }
 
 export interface BackupMeta {
-  lastBackupAt: string | null;     // ISO timestamp
-  entryCountAtBackup: number;      // how many entries existed at last backup
+  /** ISO timestamp of last *confirmed* backup (Web Share completed). Null if never confirmed. */
+  lastBackupAt: string | null;
+  /** Entry count at time of last confirmed backup. Used to compute "new entries since backup". */
+  entryCountAtBackup: number;
+  /** ISO timestamp of last backup *attempt* via download fallback. Null if never attempted. */
+  lastAttemptAt: string | null;
+  /** Which method was last used: 'shared' (confirmed) or 'downloaded' (unverifiable). */
+  lastAttemptMethod: 'shared' | 'downloaded' | null;
 }

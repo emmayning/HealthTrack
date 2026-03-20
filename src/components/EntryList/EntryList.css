@@ -4,8 +4,14 @@
 
 .entry-list h2 {
   font-size: 1.1rem;
-  margin: 0 0 12px 0;
+  margin: 0 0 4px 0;
   color: var(--color-text);
+}
+
+.list-edit-hint {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  margin: 0 0 12px 0;
 }
 
 .list-empty {
@@ -27,6 +33,16 @@
   padding: 12px 14px;
 }
 
+.entry-card-tappable {
+  cursor: pointer;
+  transition: background 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.entry-card-tappable:active {
+  background: var(--color-bg);
+}
+
 .entry-card-header {
   display: flex;
   justify-content: space-between;
@@ -43,6 +59,13 @@
 .entry-actions {
   display: flex;
   gap: 6px;
+  align-items: center;
+}
+
+.entry-tap-hint {
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
+  opacity: 0.7;
 }
 
 .btn-sm {

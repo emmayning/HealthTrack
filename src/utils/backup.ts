@@ -1,5 +1,5 @@
 import type { HealthEntry } from '../types';
-import { getAllEntries, saveEntry, clearAllEntries, bulkAddEntries, getEntryCount, saveBackupMeta } from '../db/db';
+import { getAllEntries, saveEntry, clearAllEntries, bulkAddEntries, getEntryCount, getBackupMeta, saveBackupMeta } from '../db/db';
 
 export interface BackupData {
   version: 1;
@@ -7,6 +7,20 @@ export interface BackupData {
   exportedAt: string;
   entries: HealthEntry[];
 }
+
+/**
+ * Result from exportBackup() so the UI can respond honestly
+ * about what happened and guide the user appropriately.
+ *
+ * - 'shared': Web Share API completed — user chose a destination
+ *   in the native share sheet. We can be confident the file was saved.
+ * - 'downloaded': Fallback download link was triggered. The browser
+ *   initiated a download, but we cannot verify the user actually saved
+ *   it — especially on iOS Safari where .json files may open in a new
+ *   tab instead of saving. The UI should show guidance, not a success claim.
+ * - 'cancelled': User opened the share sheet but dismissed it.
+ */
+export type BackupResult = 'shared' | 'downloaded' | 'cancelled';
 
 function buildFilename(): string {
   const date = new Date().toISOString().slice(0, 10);
@@ -28,19 +42,53 @@ async function buildBackupData(): Promise<BackupData> {
   };
 }
 
-async function recordBackupMeta(): Promise<void> {
+/**
+ * Record a *confirmed* backup (Web Share completed successfully).
+ * Updates both the confirmed timestamp and the attempt timestamp.
+ */
+export async function recordConfirmedBackup(): Promise<void> {
   const count = await getEntryCount();
+  const now = new Date().toISOString();
   await saveBackupMeta({
-    lastBackupAt: new Date().toISOString(),
+    lastBackupAt: now,
     entryCountAtBackup: count,
+    lastAttemptAt: now,
+    lastAttemptMethod: 'shared',
   });
 }
 
 /**
- * Try Web Share API with file support first (great on mobile).
- * Falls back to download link approach.
+ * Record a download *attempt* (fallback path).
+ * Only updates the attempt fields — does NOT touch the confirmed backup fields,
+ * because we cannot verify the user actually saved the downloaded file.
  */
-export async function exportBackup(): Promise<void> {
+export async function recordDownloadAttempt(): Promise<void> {
+  const now = new Date().toISOString();
+  // Read existing meta so we preserve confirmed backup fields
+  const existing = await getBackupMeta();
+  await saveBackupMeta({
+    lastBackupAt: existing.lastBackupAt,
+    entryCountAtBackup: existing.entryCountAtBackup,
+    lastAttemptAt: now,
+    lastAttemptMethod: 'downloaded',
+  });
+}
+
+/**
+ * Export backup file using the best available browser mechanism.
+ *
+ * 1. Try Web Share API with file support (mobile browsers).
+ *    navigator.share() resolves only after the user picks a destination,
+ *    so we can confidently record backup metadata.
+ *
+ * 2. Fall back to download link (desktop, older mobile browsers).
+ *    The browser triggers a download, but we cannot verify the user
+ *    saved the file — on iOS Safari in particular, .json files may
+ *    open in a new tab rather than saving. We still record metadata
+ *    (the user likely saved it), but the UI should show guidance
+ *    rather than a definitive success claim.
+ */
+export async function exportBackup(): Promise<BackupResult> {
   const backup = await buildBackupData();
   const blob = buildBackupBlob(backup);
   const filename = buildFilename();
@@ -52,26 +100,31 @@ export async function exportBackup(): Promise<void> {
     try {
       if (navigator.canShare(shareData)) {
         await navigator.share(shareData);
-        await recordBackupMeta();
-        return;
+        // Share completed — user picked a destination. This is confirmed.
+        await recordConfirmedBackup();
+        return 'shared';
       }
     } catch (err) {
-      // User cancelled share — don't record as backed up
+      // User cancelled the share sheet
       if (err instanceof Error && err.name === 'AbortError') {
-        return;
+        return 'cancelled';
       }
-      // Other share errors: fall through to download
+      // Other share errors (e.g. NotAllowedError): fall through to download
     }
   }
 
-  // Fallback: standard file download
+  // Fallback: trigger a download via anchor element.
+  // NOTE: On iOS Safari, .json files may open in a new tab instead
+  // of downloading. We cannot detect whether the user actually saved it.
+  // We record this as an *attempt* only — NOT a confirmed backup.
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
   a.download = filename;
   a.click();
   URL.revokeObjectURL(url);
-  await recordBackupMeta();
+  await recordDownloadAttempt();
+  return 'downloaded';
 }
 
 export function validateBackupFile(text: string): BackupData {
@@ -126,4 +179,20 @@ export async function importReplace(entries: HealthEntry[]): Promise<number> {
   await clearAllEntries();
   await bulkAddEntries(entries);
   return entries.length;
+}
+
+/**
+ * Lightweight check for iOS Safari-like environment.
+ * Used only for showing helpful save guidance — not for feature gating.
+ * Intentionally simple: checks for iPhone/iPad + Safari UA.
+ */
+export function isLikelyIOSSafari(): boolean {
+  const ua = navigator.userAgent;
+  // iPad on iOS 13+ reports as Macintosh but has touch
+  const isIOS = /iPhone|iPad|iPod/.test(ua) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  // Chrome on iOS still uses WebKit but includes 'CriOS'
+  // We want to detect stock Safari specifically
+  const isSafari = /Safari/.test(ua) && !/CriOS|FxiOS|OPiOS|EdgiOS/.test(ua);
+  return isIOS && isSafari;
 }

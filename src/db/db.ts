@@ -71,15 +71,21 @@ export async function getEntryCount(): Promise<number> {
 export async function getBackupMeta(): Promise<BackupMeta> {
   const lastAt = await db.settings.get('lastBackupAt');
   const countAt = await db.settings.get('entryCountAtBackup');
+  const attemptAt = await db.settings.get('lastAttemptAt');
+  const attemptMethod = await db.settings.get('lastAttemptMethod');
   return {
     lastBackupAt: lastAt?.value || null,
     entryCountAtBackup: countAt ? parseInt(countAt.value, 10) : 0,
+    lastAttemptAt: attemptAt?.value || null,
+    lastAttemptMethod: (attemptMethod?.value as BackupMeta['lastAttemptMethod']) || null,
   };
 }
 
 export async function saveBackupMeta(meta: BackupMeta): Promise<void> {
   await db.settings.put({ key: 'lastBackupAt', value: meta.lastBackupAt || '' });
   await db.settings.put({ key: 'entryCountAtBackup', value: String(meta.entryCountAtBackup) });
+  await db.settings.put({ key: 'lastAttemptAt', value: meta.lastAttemptAt || '' });
+  await db.settings.put({ key: 'lastAttemptMethod', value: meta.lastAttemptMethod || '' });
 }
 
 export { db };

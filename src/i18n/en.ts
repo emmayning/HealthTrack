@@ -19,8 +19,10 @@ const en: Record<string, string> = {
   'form.weight': 'Weight',
   'form.notes': 'Notes',
   'form.save': 'Save',
+  'form.update': 'Update Entry',
   'form.cancel': 'Cancel',
   'form.saved': 'Entry saved!',
+  'form.editingDate': 'Updating entry for {date}',
   'form.invalidNumber': 'Please enter a valid number',
   'form.bpm': 'bpm',
   'form.mmHg': 'mmHg',
@@ -28,7 +30,8 @@ const en: Record<string, string> = {
   // Entry List
   'list.title': 'Recent Entries',
   'list.empty': 'No entries yet. Add your first entry above!',
-  'list.edit': 'Edit',
+  'list.editHint': 'Need to fix a number? Tap any day to edit it.',
+  'list.tapToEdit': 'Edit',
   'list.delete': 'Delete',
   'list.confirmDelete': 'Delete this entry?',
   'list.morningBP': 'AM BP',
@@ -71,15 +74,33 @@ const en: Record<string, string> = {
   // Backup & Restore
   'backup.sectionTitle': 'Your Data',
   'backup.lastBackup': 'Last backup',
+  'backup.lastBackupConfirmed': 'Last confirmed backup',
   'backup.never': 'Never backed up',
   'backup.newEntries': '{count} new entries since last backup',
+  'backup.attemptStatus': 'Backup file created on {date}. Make sure you saved it to Files or iCloud Drive.',
   'backup.reminderNever': "You haven't backed up your data yet. Back up now to keep your records safe.",
   'backup.reminderStale': 'You have {count} new entries since your last backup.',
   'backup.backupButton': 'Back Up My Data',
   'backup.backupDesc': 'Save a copy of all your records',
   'backup.restoreButton': 'Restore from Backup',
-  'backup.restoreDesc': 'Use a saved backup to restore your records',
+  'backup.restoreDesc': 'Choose a backup file to restore your records',
   'backup.exportCSV': 'Export as spreadsheet (CSV)',
+
+  // How backup works
+  'backup.howTitle': 'How backup works',
+  'backup.howStep1': 'Tap Back Up My Data below',
+  'backup.howStep2': 'Save the file when prompted',
+  'backup.howStep2ios': 'Tap Share, then choose Save to Files',
+  'backup.howStep3': 'Use Restore from Backup if you ever need your records back',
+
+  // Post-backup messages
+  'backup.sharedSuccess': 'Backup saved successfully!',
+  'backup.downloadReady': 'Your backup file is ready.',
+  'backup.downloadHint': 'Check your Downloads folder for the backup file.',
+  'backup.downloadHintIOS': 'On iPhone, tap the Share button and choose Save to Files.',
+  'backup.cancelled': 'Backup was not saved. Tap Back Up My Data to try again.',
+
+  // Restore
   'backup.confirmTitle': 'Restore from backup?',
   'backup.confirmWarning': 'This will replace all your current records with the backup data. This cannot be undone.',
   'backup.confirmDetail': 'You currently have {currentCount} records. The backup contains {backupCount} records.',

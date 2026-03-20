@@ -20,7 +20,7 @@ import './App.css';
 export default function App() {
   const { entries, loading, save, remove, refresh } = useEntries();
   const { settings, setLanguage, setWeightUnit } = useSettings();
-  const { lastBackupAt, newEntriesSinceBackup, refreshBackupStatus } = useBackupStatus(entries.length);
+  const { lastBackupAt, newEntriesSinceBackup, lastAttemptAt, lastAttemptMethod, refreshBackupStatus } = useBackupStatus(entries.length);
   const [range, setRange] = useState<RangeFilterType>(30);
   const [editingEntry, setEditingEntry] = useState<HealthEntry | null>(null);
   const [showSettings, setShowSettings] = useState(false);
@@ -102,6 +102,8 @@ export default function App() {
           weightUnit={settings.weightUnit}
           lastBackupAt={lastBackupAt}
           newEntriesSinceBackup={newEntriesSinceBackup}
+          lastAttemptAt={lastAttemptAt}
+          lastAttemptMethod={lastAttemptMethod}
           onRestoreDone={handleRestoreDone}
           onBackupDone={handleBackupDone}
         />

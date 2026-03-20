@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from '../../i18n';
 import type { HealthEntry, WeightUnit } from '../../types';
-import { todayISO } from '../../utils/dates';
+import { todayISO, toFullDate } from '../../utils/dates';
 import { validateEntry, type ValidationWarning } from '../../utils/validation';
 import { displayWeight, toKg } from '../../utils/weight';
 import './EntryForm.css';
@@ -13,12 +13,53 @@ interface Props {
   weightUnit: WeightUnit;
 }
 
-function parseField(val: string): { value: number | null; error: boolean } {
+/** Parse a field that allows decimals (weight). */
+function parseDecimalField(val: string): { value: number | null; error: boolean } {
   const trimmed = val.trim();
   if (trimmed === '') return { value: null, error: false };
   const num = parseFloat(trimmed);
   if (isNaN(num)) return { value: null, error: true };
   return { value: num, error: false };
+}
+
+/** Parse a field that must be an integer (BP, HR). Rounds to nearest integer. */
+function parseIntegerField(val: string): { value: number | null; error: boolean } {
+  const trimmed = val.trim();
+  if (trimmed === '') return { value: null, error: false };
+  const num = parseFloat(trimmed);
+  if (isNaN(num)) return { value: null, error: true };
+  return { value: Math.round(num), error: false };
+}
+
+/**
+ * Coerce a string to an integer string on blur.
+ * - "120.5" → "121"   (rounds to nearest)
+ * - "80.2"  → "80"    (rounds to nearest)
+ * - "120..5"→ "120"   (parseFloat stops at second dot)
+ * - "98/65" → "98"    (parseFloat stops at slash)
+ * - "abc"   → ""      (NaN → empty)
+ * - ""      → ""      (blank stays blank)
+ */
+function coerceToIntegerString(raw: string): string {
+  const trimmed = raw.trim();
+  if (trimmed === '') return '';
+  const num = parseFloat(trimmed);
+  if (isNaN(num)) return '';
+  return String(Math.round(num));
+}
+
+/** Populate form fields from a HealthEntry. */
+function entryToFormFields(entry: HealthEntry, weightUnit: WeightUnit) {
+  return {
+    date: entry.date,
+    morningSys: entry.morningSystolic?.toString() ?? '',
+    morningDia: entry.morningDiastolic?.toString() ?? '',
+    eveningSys: entry.eveningSystolic?.toString() ?? '',
+    eveningDia: entry.eveningDiastolic?.toString() ?? '',
+    hr: entry.restingHeartRate?.toString() ?? '',
+    weight: entry.weight !== null ? displayWeight(entry.weight, weightUnit) : '',
+    notes: entry.notes ?? '',
+  };
 }
 
 export default function EntryForm({ onSave, editingEntry, onCancelEdit, weightUnit }: Props) {
@@ -35,20 +76,18 @@ export default function EntryForm({ onSave, editingEntry, onCancelEdit, weightUn
   const [warnings, setWarnings] = useState<ValidationWarning[]>([]);
   const [saved, setSaved] = useState(false);
 
+  // Hydrate form when editingEntry changes
   useEffect(() => {
     if (editingEntry) {
-      setDate(editingEntry.date);
-      setMorningSys(editingEntry.morningSystolic?.toString() ?? '');
-      setMorningDia(editingEntry.morningDiastolic?.toString() ?? '');
-      setEveningSys(editingEntry.eveningSystolic?.toString() ?? '');
-      setEveningDia(editingEntry.eveningDiastolic?.toString() ?? '');
-      setHr(editingEntry.restingHeartRate?.toString() ?? '');
-      setWeight(
-        editingEntry.weight !== null
-          ? displayWeight(editingEntry.weight, weightUnit)
-          : ''
-      );
-      setNotes(editingEntry.notes);
+      const fields = entryToFormFields(editingEntry, weightUnit);
+      setDate(fields.date);
+      setMorningSys(fields.morningSys);
+      setMorningDia(fields.morningDia);
+      setEveningSys(fields.eveningSys);
+      setEveningDia(fields.eveningDia);
+      setHr(fields.hr);
+      setWeight(fields.weight);
+      setNotes(fields.notes);
       setErrors({});
       setWarnings([]);
       setSaved(false);
@@ -66,17 +105,25 @@ export default function EntryForm({ onSave, editingEntry, onCancelEdit, weightUn
     setNotes('');
     setErrors({});
     setWarnings([]);
+    setSaved(false);
+  };
+
+  // For integer fields: let the user type freely, but round on blur.
+  const handleIntegerBlur = (setter: (v: string) => void) => (e: React.FocusEvent<HTMLInputElement>) => {
+    setter(coerceToIntegerString(e.target.value));
   };
 
   const handleSave = async () => {
     setSaved(false);
-    const fields: Record<string, { raw: string; parsed: ReturnType<typeof parseField> }> = {
-      morningSystolic: { raw: morningSys, parsed: parseField(morningSys) },
-      morningDiastolic: { raw: morningDia, parsed: parseField(morningDia) },
-      eveningSystolic: { raw: eveningSys, parsed: parseField(eveningSys) },
-      eveningDiastolic: { raw: eveningDia, parsed: parseField(eveningDia) },
-      restingHeartRate: { raw: hr, parsed: parseField(hr) },
-      weight: { raw: weight, parsed: parseField(weight) },
+    // BP and HR use parseIntegerField (rounds as safety net)
+    // Weight uses parseDecimalField (allows decimals)
+    const fields: Record<string, { raw: string; parsed: ReturnType<typeof parseIntegerField> }> = {
+      morningSystolic: { raw: morningSys, parsed: parseIntegerField(morningSys) },
+      morningDiastolic: { raw: morningDia, parsed: parseIntegerField(morningDia) },
+      eveningSystolic: { raw: eveningSys, parsed: parseIntegerField(eveningSys) },
+      eveningDiastolic: { raw: eveningDia, parsed: parseIntegerField(eveningDia) },
+      restingHeartRate: { raw: hr, parsed: parseIntegerField(hr) },
+      weight: { raw: weight, parsed: parseDecimalField(weight) },
     };
 
     const newErrors: Record<string, boolean> = {};
@@ -110,21 +157,36 @@ export default function EntryForm({ onSave, editingEntry, onCancelEdit, weightUn
     setWarnings(w);
 
     await onSave(entry);
-    setSaved(true);
-    if (!editingEntry) {
+
+    if (editingEntry) {
+      // Exit edit mode, reset form, then briefly show success
+      onCancelEdit();
+      resetForm();
+    } else {
       resetForm();
     }
+    // Set saved AFTER resetForm so it isn't cleared by resetForm
+    setSaved(true);
   };
 
   const isEditing = editingEntry !== null;
 
   return (
-    <div className="entry-form">
+    <div className={`entry-form${isEditing ? ' entry-form-editing' : ''}`}>
       <h2>{isEditing ? t('form.editTitle') : t('form.title')}</h2>
+      {isEditing && editingEntry && (
+        <div className="form-editing-hint">
+          {t('form.editingDate', { date: toFullDate(editingEntry.date, lang) })}
+        </div>
+      )}
 
       <div className="form-field">
         <label>{t('form.date')}</label>
-        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+        {isEditing ? (
+          <div className="date-locked">{toFullDate(date, lang)}</div>
+        ) : (
+          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+        )}
       </div>
 
       <fieldset className="bp-group">
@@ -134,9 +196,11 @@ export default function EntryForm({ onSave, editingEntry, onCancelEdit, weightUn
             <div className="bp-field">
               <label>{t('form.systolic')}</label>
               <input
-                inputMode="decimal"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={morningSys}
                 onChange={(e) => setMorningSys(e.target.value)}
+                onBlur={handleIntegerBlur(setMorningSys)}
                 className={errors.morningSystolic ? 'error' : ''}
               />
             </div>
@@ -144,9 +208,11 @@ export default function EntryForm({ onSave, editingEntry, onCancelEdit, weightUn
             <div className="bp-field">
               <label>{t('form.diastolic')}</label>
               <input
-                inputMode="decimal"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={morningDia}
                 onChange={(e) => setMorningDia(e.target.value)}
+                onBlur={handleIntegerBlur(setMorningDia)}
                 className={errors.morningDiastolic ? 'error' : ''}
               />
             </div>
@@ -162,9 +228,11 @@ export default function EntryForm({ onSave, editingEntry, onCancelEdit, weightUn
             <div className="bp-field">
               <label>{t('form.systolic')}</label>
               <input
-                inputMode="decimal"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={eveningSys}
                 onChange={(e) => setEveningSys(e.target.value)}
+                onBlur={handleIntegerBlur(setEveningSys)}
                 className={errors.eveningSystolic ? 'error' : ''}
               />
             </div>
@@ -172,9 +240,11 @@ export default function EntryForm({ onSave, editingEntry, onCancelEdit, weightUn
             <div className="bp-field">
               <label>{t('form.diastolic')}</label>
               <input
-                inputMode="decimal"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={eveningDia}
                 onChange={(e) => setEveningDia(e.target.value)}
+                onBlur={handleIntegerBlur(setEveningDia)}
                 className={errors.eveningDiastolic ? 'error' : ''}
               />
             </div>
@@ -187,9 +257,11 @@ export default function EntryForm({ onSave, editingEntry, onCancelEdit, weightUn
         <label>{t('form.restingHR')}</label>
         <div className="input-with-unit">
           <input
-            inputMode="decimal"
+            inputMode="numeric"
+            pattern="[0-9]*"
             value={hr}
             onChange={(e) => setHr(e.target.value)}
+            onBlur={handleIntegerBlur(setHr)}
             className={errors.restingHeartRate ? 'error' : ''}
           />
           <span className="unit">{t('form.bpm')}</span>
@@ -234,7 +306,7 @@ export default function EntryForm({ onSave, editingEntry, onCancelEdit, weightUn
 
       <div className="form-actions">
         <button className="btn-primary" onClick={handleSave}>
-          {t('form.save')}
+          {isEditing ? t('form.update') : t('form.save')}
         </button>
         {isEditing && (
           <button
