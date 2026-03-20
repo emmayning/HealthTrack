@@ -12,6 +12,7 @@ import type { HealthEntry, WeightUnit } from '../../types';
 import { toShortLabel } from '../../utils/dates';
 import { kgToLb } from '../../utils/weight';
 import ChartTooltip from './ChartTooltip';
+import NoteDot from './NoteDot';
 
 interface Props {
   entries: HealthEntry[];
@@ -27,6 +28,7 @@ export default function WeightChart({ entries, weightUnit }: Props) {
     .sort((a, b) => a.date.localeCompare(b.date))
     .map((e) => ({
       date: e.date,
+      notes: e.notes || '',
       [label]: weightUnit === 'lb' ? kgToLb(e.weight!) : e.weight,
     }));
 
@@ -55,7 +57,7 @@ export default function WeightChart({ entries, weightUnit }: Props) {
               dataKey={label}
               stroke="var(--color-chart-weight)"
               strokeWidth={2}
-              dot={{ r: 3 }}
+              dot={<NoteDot stroke="var(--color-chart-weight)" />}
               connectNulls
             />
           </LineChart>

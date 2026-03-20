@@ -53,6 +53,7 @@ const zh: Record<string, string> = {
   'charts.7d': '7天',
   'charts.30d': '30天',
   'charts.90d': '90天',
+  'charts.noteLegend': '带圆圈的点表示有备注，点击该日期即可查看',
 
   // Export
   'export.csv': '导出 CSV',

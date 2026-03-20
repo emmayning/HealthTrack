@@ -52,6 +52,7 @@ const en: Record<string, string> = {
   'charts.7d': '7D',
   'charts.30d': '30D',
   'charts.90d': '90D',
+  'charts.noteLegend': 'has notes — tap to preview',
 
   // Export
   'export.csv': 'Export CSV',

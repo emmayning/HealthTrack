@@ -13,6 +13,7 @@ import RangeFilter from './components/Charts/RangeFilter';
 import BPChart from './components/Charts/BPChart';
 import HRChart from './components/Charts/HRChart';
 import WeightChart from './components/Charts/WeightChart';
+import NoteLegend from './components/Charts/NoteLegend';
 import DataManagement from './components/DataManagement/DataManagement';
 import './components/Charts/Charts.css';
 import './App.css';
@@ -93,6 +94,7 @@ export default function App() {
 
         <div className="charts-section">
           <RangeFilter value={range} onChange={setRange} />
+          <NoteLegend />
           <BPChart entries={filteredEntries} />
           <HRChart entries={filteredEntries} />
           <WeightChart entries={filteredEntries} weightUnit={settings.weightUnit} />

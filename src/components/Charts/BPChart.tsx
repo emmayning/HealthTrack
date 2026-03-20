@@ -12,6 +12,7 @@ import { useTranslation } from '../../i18n';
 import type { HealthEntry, BPView } from '../../types';
 import { toShortLabel } from '../../utils/dates';
 import ChartTooltip from './ChartTooltip';
+import NoteDot from './NoteDot';
 
 interface Props {
   entries: HealthEntry[];
@@ -29,6 +30,7 @@ export default function BPChart({ entries }: Props) {
     .sort((a, b) => a.date.localeCompare(b.date))
     .map((e) => ({
       date: e.date,
+      notes: e.notes || '',
       [t('charts.systolic')]: e[sysKey],
       [t('charts.diastolic')]: e[diaKey],
     }));
@@ -74,7 +76,7 @@ export default function BPChart({ entries }: Props) {
               dataKey={t('charts.systolic')}
               stroke="var(--color-chart-sys)"
               strokeWidth={2}
-              dot={{ r: 3 }}
+              dot={<NoteDot stroke="var(--color-chart-sys)" />}
               connectNulls
             />
             <Line
@@ -82,7 +84,7 @@ export default function BPChart({ entries }: Props) {
               dataKey={t('charts.diastolic')}
               stroke="var(--color-chart-dia)"
               strokeWidth={2}
-              dot={{ r: 3 }}
+              dot={<NoteDot stroke="var(--color-chart-dia)" />}
               connectNulls
             />
           </LineChart>

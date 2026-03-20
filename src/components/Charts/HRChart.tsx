@@ -11,6 +11,7 @@ import { useTranslation } from '../../i18n';
 import type { HealthEntry } from '../../types';
 import { toShortLabel } from '../../utils/dates';
 import ChartTooltip from './ChartTooltip';
+import NoteDot from './NoteDot';
 
 interface Props {
   entries: HealthEntry[];
@@ -24,6 +25,7 @@ export default function HRChart({ entries }: Props) {
     .sort((a, b) => a.date.localeCompare(b.date))
     .map((e) => ({
       date: e.date,
+      notes: e.notes || '',
       [t('charts.hr')]: e.restingHeartRate,
     }));
 
@@ -52,7 +54,7 @@ export default function HRChart({ entries }: Props) {
               dataKey={t('charts.hr')}
               stroke="var(--color-chart-hr)"
               strokeWidth={2}
-              dot={{ r: 3 }}
+              dot={<NoteDot stroke="var(--color-chart-hr)" />}
               connectNulls
             />
           </LineChart>

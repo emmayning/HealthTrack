@@ -1,6 +1,6 @@
 # PROJECT_STATE.md
 
-> Last updated: 2026-03-19 (Session 8)
+> Last updated: 2026-03-20 (Session 10)
 > Purpose: Enable any new Claude Code session to understand and safely extend this project.
 
 > **⚠️ MANDATORY RULE: Every future Claude session MUST read this file before making any changes, and MUST update it after any meaningful change.**
@@ -69,7 +69,7 @@
 - No confirmation dialog before deleting entries (immediate delete)
 - No dark mode
 - No accessibility audit done
-- Chart tooltips could show more context (e.g., notes)
+- ~~Chart tooltips could show more context (e.g., notes)~~ ✅ Done (Session 10)
 - No pagination on entry list (could be slow with many entries)
 - Old ExportButton and ImportButton components still exist in codebase but are no longer rendered (replaced by DataManagement); can be deleted in cleanup
 
@@ -102,7 +102,7 @@ Backup metadata: lastBackupAt + entryCountAtBackup → stored in Dexie settings 
 - BPChart: 2 lines (systolic/diastolic), toggleable morning/evening via `BPView` state
 - HRChart: single line
 - WeightChart: converts kg→lb for display if needed
-- Common: dynamic tick intervals based on data density, custom tooltip component
+- Common: dynamic tick intervals based on data density, custom tooltip component, note indicators (ring dots + tooltip preview)
 
 ### Date Handling
 - All dates stored as `YYYY-MM-DD` strings
@@ -127,7 +127,8 @@ src/
 │   │   ├── HRChart.tsx         # Heart rate chart
 │   │   ├── WeightChart.tsx     # Weight chart (kg/lb aware)
 │   │   ├── RangeFilter.tsx     # 7/30/90 day selector
-│   │   ├── ChartTooltip.tsx    # Shared custom tooltip
+│   │   ├── ChartTooltip.tsx    # Shared custom tooltip (includes note preview)
+│   │   ├── NoteDot.tsx         # Custom dot renderer — ring indicator for days with notes
 │   │   └── Charts.css
 │   ├── DataManagement/
 │   │   ├── DataManagement.tsx  # ★ Backup/Restore/CSV — main data management UI
@@ -654,3 +655,71 @@ Key-value store:
 5. User corrects values, taps "Update Entry"
 6. Entry is saved, form resets to new-entry mode, "Entry saved!" briefly shown
 7. Or user taps Cancel → form resets without saving
+
+### 2026-03-20 — Session 9: Auto-fill form when date matches existing entry
+**Why:** When a user changed the date picker to a date with existing data (visible in the chart), the form stayed empty. The user expected the form to auto-populate with the existing data for that date, similar to the tap-to-edit flow. This made it awkward to review or update past entries by browsing dates.
+
+**What was changed:**
+
+1. **`src/App.tsx`** — passes `entries` array to `EntryForm` as a new prop.
+
+2. **`src/components/EntryForm/EntryForm.tsx`** — added date-aware auto-fill:
+   - New `entries` prop in `Props` interface
+   - New `autoEditEntry` local state (HealthEntry | null) — tracks date-picker-initiated edits separately from `editingEntry` (tap-initiated edits)
+   - New `useEffect` watching `date` and `entries`: when date matches an existing entry, populates fields via `entryToFormFields()` and sets `autoEditEntry`; when no match, clears data fields
+   - `isEditing` derived from `editingEntry || autoEditEntry` — both flows show edit styling (blue border, "Update Entry" button)
+   - `isDateLocked` only true for `editingEntry` (tap-to-edit) — date picker stays editable during auto-fill so users can browse freely between dates
+   - Save handler clears `autoEditEntry` and resets form after saving
+
+**Behavior:**
+- Change date picker to a date with saved data → form auto-fills, shows blue edit border, "Update Entry" + "Cancel" buttons
+- Change to a date with no data → form clears back to empty create mode
+- Tap entry in list → still locks date (existing behavior preserved)
+- Date picker remains editable during auto-fill mode
+
+**Files touched:**
+- `src/App.tsx` (modified — 1 new prop)
+- `src/components/EntryForm/EntryForm.tsx` (modified — ~25 lines added)
+- `PROJECT_STATE.md` (updated)
+
+### 2026-03-20 — Session 10: Note indicators on charts
+**Why:** Users could add notes to daily entries, but there was no way to tell from the charts which days had notes. Users had to click through dates manually to discover notes. This made notes hard to find and reduced their usefulness.
+
+**What was changed:**
+
+1. **`src/components/Charts/NoteDot.tsx`** (NEW) — custom Recharts dot renderer:
+   - For data points without notes: renders a standard white-filled dot (r=3, stroke=line color)
+   - For data points with notes: adds a subtle outer ring (r=6, 1px stroke, same line color at 40% opacity) around the standard dot
+   - Pure SVG — consistent rendering across all devices/browsers
+
+2. **`src/components/Charts/BPChart.tsx`** — added `notes` field to chart data mapping, replaced `dot={{ r: 3 }}` with `dot={<NoteDot />}` on both systolic and diastolic lines.
+
+3. **`src/components/Charts/HRChart.tsx`** — same changes as BPChart (notes in data, NoteDot for dot prop).
+
+4. **`src/components/Charts/WeightChart.tsx`** — same changes as BPChart.
+
+5. **`src/components/Charts/ChartTooltip.tsx`** — enhanced to show note preview:
+   - Reads notes from `payload[0]?.payload?.notes`
+   - When notes exist, shows truncated preview (max 60 chars) at bottom of tooltip in italic
+   - Separated by a subtle border line from the data values
+
+6. **`src/components/Charts/Charts.css`** — added `.tooltip-note` style (italic, secondary color, border-top separator, max-width 200px, word-wrap).
+
+**Visual behavior:**
+- **Ring indicator**: Subtle outer ring on chart dots for days with notes — visible but not cluttering
+- **Tooltip preview**: Hovering/tapping a data point with notes shows a truncated italic preview below the values
+- **Mobile**: Ring renders identically (pure SVG). Tooltip shows on tap via existing Recharts behavior.
+- **Desktop**: Tooltip shows on hover. Same ring indicator.
+
+**Limitations:**
+- Ring only appears on data points that exist in each chart. If a day has notes but no BP data, the BP chart won't show a ring for that day.
+- Notes longer than 60 characters are truncated with "…" in the tooltip.
+
+**Files touched:**
+- `src/components/Charts/NoteDot.tsx` (new — ~30 lines)
+- `src/components/Charts/BPChart.tsx` (modified)
+- `src/components/Charts/HRChart.tsx` (modified)
+- `src/components/Charts/WeightChart.tsx` (modified)
+- `src/components/Charts/ChartTooltip.tsx` (modified)
+- `src/components/Charts/Charts.css` (modified)
+- `PROJECT_STATE.md` (updated)
