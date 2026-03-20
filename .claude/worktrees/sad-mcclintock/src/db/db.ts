@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie';
-import type { HealthEntry, AppSettings, BackupMeta } from '../types';
+import type { HealthEntry, AppSettings } from '../types';
 
 class HealthTrackDB extends Dexie {
   entries!: Table<HealthEntry, number>;
@@ -62,24 +62,6 @@ export async function clearAllEntries(): Promise<void> {
 export async function bulkAddEntries(entries: HealthEntry[]): Promise<void> {
   const cleaned = entries.map(({ id: _, ...rest }) => rest as HealthEntry);
   await db.entries.bulkAdd(cleaned);
-}
-
-export async function getEntryCount(): Promise<number> {
-  return db.entries.count();
-}
-
-export async function getBackupMeta(): Promise<BackupMeta> {
-  const lastAt = await db.settings.get('lastBackupAt');
-  const countAt = await db.settings.get('entryCountAtBackup');
-  return {
-    lastBackupAt: lastAt?.value || null,
-    entryCountAtBackup: countAt ? parseInt(countAt.value, 10) : 0,
-  };
-}
-
-export async function saveBackupMeta(meta: BackupMeta): Promise<void> {
-  await db.settings.put({ key: 'lastBackupAt', value: meta.lastBackupAt || '' });
-  await db.settings.put({ key: 'entryCountAtBackup', value: String(meta.entryCountAtBackup) });
 }
 
 export { db };

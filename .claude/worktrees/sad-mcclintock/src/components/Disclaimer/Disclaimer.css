@@ -1,0 +1,9 @@
+.disclaimer {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  margin-bottom: 16px;
+}

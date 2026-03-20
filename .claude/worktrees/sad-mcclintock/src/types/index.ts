@@ -19,8 +19,3 @@ export interface AppSettings {
   language: Language;
   weightUnit: WeightUnit;
 }
-
-export interface BackupMeta {
-  lastBackupAt: string | null;     // ISO timestamp
-  entryCountAtBackup: number;      // how many entries existed at last backup
-}

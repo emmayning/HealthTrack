@@ -1,0 +1,208 @@
+.data-mgmt {
+  background: var(--color-card);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.data-mgmt-title {
+  font-size: 1.1rem;
+  margin: 0 0 12px 0;
+  color: var(--color-text);
+}
+
+/* Backup status */
+.backup-status {
+  margin-bottom: 12px;
+}
+
+.backup-status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.backup-status-label {
+  color: var(--color-text-secondary);
+}
+
+.backup-status-value {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.backup-status-new {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  text-align: right;
+  margin-top: 2px;
+}
+
+/* Gentle reminder */
+.backup-reminder {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+  font-size: 0.82rem;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+/* Primary action buttons */
+.btn-backup,
+.btn-restore {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-bg);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+  margin-bottom: 8px;
+}
+
+.btn-backup:active,
+.btn-restore:active {
+  background: var(--color-border);
+}
+
+.btn-backup:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.btn-backup-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.btn-backup-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.btn-backup-text strong {
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
+
+.btn-backup-text span {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  font-weight: normal;
+}
+
+/* CSV secondary button */
+.btn-csv-secondary {
+  display: block;
+  width: 100%;
+  padding: 8px 14px;
+  margin-top: 4px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px dashed var(--color-border);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-csv-secondary:active {
+  background: var(--color-bg);
+}
+
+/* Restore modal */
+.restore-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+
+.restore-modal {
+  background: var(--color-card);
+  border-radius: 14px;
+  padding: 20px;
+  max-width: 340px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.restore-modal h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--color-text);
+}
+
+.restore-modal-warning {
+  font-size: 0.85rem;
+  color: var(--color-danger);
+  margin: 0;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.restore-modal-detail {
+  font-size: 0.82rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.btn-confirm-restore {
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: var(--color-danger);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.btn-confirm-restore:active {
+  opacity: 0.85;
+}
+
+.btn-cancel-restore {
+  padding: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-card);
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+/* Messages */
+.restore-message {
+  font-size: 0.83rem;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.restore-success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.restore-error {
+  background: #fee2e2;
+  color: #991b1b;
+}

@@ -67,27 +67,6 @@ const zh: Record<string, string> = {
   'settings.title': '设置',
   'settings.language': '语言',
   'settings.weightUnit': '体重单位',
-
-  // Backup & Restore
-  'backup.sectionTitle': '你的数据',
-  'backup.lastBackup': '上次备份',
-  'backup.never': '从未备份',
-  'backup.newEntries': '自上次备份以来有 {count} 条新记录',
-  'backup.reminderNever': '你还没有备份过数据。立即备份以保护你的记录安全。',
-  'backup.reminderStale': '自上次备份以来，你有 {count} 条新记录。',
-  'backup.backupButton': '备份我的数据',
-  'backup.backupDesc': '保存所有记录的副本',
-  'backup.restoreButton': '从备份恢复',
-  'backup.restoreDesc': '使用已保存的备份来恢复你的记录',
-  'backup.exportCSV': '导出为表格 (CSV)',
-  'backup.confirmTitle': '从备份恢复？',
-  'backup.confirmWarning': '这将用备份数据替换你当前的所有记录。此操作无法撤销。',
-  'backup.confirmDetail': '你目前有 {currentCount} 条记录。备份中包含 {backupCount} 条记录。',
-  'backup.confirmYes': '确认恢复我的数据',
-  'backup.confirmNo': '取消',
-  'backup.restoreSuccess': '成功恢复了 {count} 条记录！',
-  'backup.restoreErrorBadFile': '这个文件不是 HealthTrack 的备份文件，请选择正确的文件。',
-  'backup.restoreErrorFailed': '恢复过程中出现问题，你的数据未被更改。',
 };
 
 export default zh;

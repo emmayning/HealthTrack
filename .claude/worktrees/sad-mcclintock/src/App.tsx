@@ -2,7 +2,6 @@ import { useState, useMemo, useCallback } from 'react';
 import { I18nContext } from './i18n';
 import { useEntries } from './hooks/useEntries';
 import { useSettings } from './hooks/useSettings';
-import { useBackupStatus } from './hooks/useBackupStatus';
 import { daysAgoISO } from './utils/dates';
 import type { HealthEntry, RangeFilter as RangeFilterType } from './types';
 import Disclaimer from './components/Disclaimer/Disclaimer';
@@ -13,14 +12,14 @@ import RangeFilter from './components/Charts/RangeFilter';
 import BPChart from './components/Charts/BPChart';
 import HRChart from './components/Charts/HRChart';
 import WeightChart from './components/Charts/WeightChart';
-import DataManagement from './components/DataManagement/DataManagement';
+import ExportButton from './components/ExportButton/ExportButton';
+import ImportButton from './components/ImportButton/ImportButton';
 import './components/Charts/Charts.css';
 import './App.css';
 
 export default function App() {
   const { entries, loading, save, remove, refresh } = useEntries();
   const { settings, setLanguage, setWeightUnit } = useSettings();
-  const { lastBackupAt, newEntriesSinceBackup, refreshBackupStatus } = useBackupStatus(entries.length);
   const [range, setRange] = useState<RangeFilterType>(30);
   const [editingEntry, setEditingEntry] = useState<HealthEntry | null>(null);
   const [showSettings, setShowSettings] = useState(false);
@@ -42,15 +41,6 @@ export default function App() {
   const handleCancelEdit = useCallback(() => {
     setEditingEntry(null);
   }, []);
-
-  const handleRestoreDone = useCallback(async () => {
-    await refresh();
-    await refreshBackupStatus();
-  }, [refresh, refreshBackupStatus]);
-
-  const handleBackupDone = useCallback(async () => {
-    await refreshBackupStatus();
-  }, [refreshBackupStatus]);
 
   if (loading) {
     return <div className="loading">Loading...</div>;
@@ -97,14 +87,10 @@ export default function App() {
           <WeightChart entries={filteredEntries} weightUnit={settings.weightUnit} />
         </div>
 
-        <DataManagement
-          entries={entries}
-          weightUnit={settings.weightUnit}
-          lastBackupAt={lastBackupAt}
-          newEntriesSinceBackup={newEntriesSinceBackup}
-          onRestoreDone={handleRestoreDone}
-          onBackupDone={handleBackupDone}
-        />
+        <div className="data-actions">
+          <ExportButton entries={entries} weightUnit={settings.weightUnit} />
+          <ImportButton onImportDone={refresh} />
+        </div>
 
         <EntryList
           entries={entries}

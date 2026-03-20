@@ -67,27 +67,6 @@ const en: Record<string, string> = {
   'settings.title': 'Settings',
   'settings.language': 'Language',
   'settings.weightUnit': 'Weight Unit',
-
-  // Backup & Restore
-  'backup.sectionTitle': 'Your Data',
-  'backup.lastBackup': 'Last backup',
-  'backup.never': 'Never backed up',
-  'backup.newEntries': '{count} new entries since last backup',
-  'backup.reminderNever': "You haven't backed up your data yet. Back up now to keep your records safe.",
-  'backup.reminderStale': 'You have {count} new entries since your last backup.',
-  'backup.backupButton': 'Back Up My Data',
-  'backup.backupDesc': 'Save a copy of all your records',
-  'backup.restoreButton': 'Restore from Backup',
-  'backup.restoreDesc': 'Use a saved backup to restore your records',
-  'backup.exportCSV': 'Export as spreadsheet (CSV)',
-  'backup.confirmTitle': 'Restore from backup?',
-  'backup.confirmWarning': 'This will replace all your current records with the backup data. This cannot be undone.',
-  'backup.confirmDetail': 'You currently have {currentCount} records. The backup contains {backupCount} records.',
-  'backup.confirmYes': 'Yes, Restore My Data',
-  'backup.confirmNo': 'Cancel',
-  'backup.restoreSuccess': 'Restored {count} records successfully!',
-  'backup.restoreErrorBadFile': 'This file does not look like a HealthTrack backup. Please choose the correct file.',
-  'backup.restoreErrorFailed': 'Something went wrong while restoring. Your data was not changed.',
 };
 
 export default en;

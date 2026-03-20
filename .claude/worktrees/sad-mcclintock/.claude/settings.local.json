@@ -10,8 +10,7 @@
       "Bash(rm -rf hearttrack-temp)",
       "Bash(rm -f src/assets/react.svg src/assets/vite.svg src/assets/hero.png)",
       "Bash(rmdir src/assets)",
-      "mcp__Claude_Preview__preview_start",
-      "Bash(npx tsc:*)"
+      "mcp__Claude_Preview__preview_start"
     ]
   }
 }
