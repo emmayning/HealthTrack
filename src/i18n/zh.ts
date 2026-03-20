@@ -99,7 +99,7 @@ const zh: Record<string, string> = {
   'backup.sharedSuccess': '备份已成功保存！',
   'backup.downloadReady': '备份文件已准备好。',
   'backup.downloadHint': '请在下载文件夹中查找备份文件。',
-  'backup.downloadHintIOS': '在 iPhone 上，点击"分享"按钮，选择"存储到文件"。',
+  'backup.downloadHintIOS': '文件通常会出现在"文件"App中。如果没有看到，请点击分享并选择"存储到文件"。',
   'backup.cancelled': '备份未保存。请再次点击"备份我的数据"重试。',
 
   // Restore

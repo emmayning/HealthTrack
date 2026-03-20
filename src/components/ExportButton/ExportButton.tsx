@@ -9,10 +9,10 @@ interface Props {
 }
 
 export default function ExportButton({ entries, weightUnit }: Props) {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
 
   const handleCSV = () => {
-    const csv = entriesToCSV(entries, weightUnit);
+    const csv = entriesToCSV(entries, weightUnit, lang);
     downloadCSV(csv);
   };
 

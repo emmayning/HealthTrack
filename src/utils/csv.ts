@@ -1,22 +1,22 @@
-import type { HealthEntry, WeightUnit } from '../types';
+import type { HealthEntry, WeightUnit, Language } from '../types';
 
 function kgToLb(kg: number): number {
   return Math.round(kg * 2.20462 * 10) / 10;
 }
 
-export function entriesToCSV(entries: HealthEntry[], weightUnit: WeightUnit): string {
+const HEADERS_EN = ['date', 'morningSystolic', 'morningDiastolic', 'eveningSystolic', 'eveningDiastolic', 'restingHeartRate', 'weightKg', 'notes'] as const;
+const HEADERS_ZH = ['日期', '收缩压（早）', '舒张压（早）', '收缩压（晚）', '舒张压（晚）', '心率（次/分钟）', '体重（kg）', '备注'] as const;
+const DISPLAY_WEIGHT_HEADERS_EN = ['displayWeight', 'displayWeightUnit'] as const;
+const DISPLAY_WEIGHT_HEADERS_ZH = ['显示体重', '体重单位'] as const;
+
+export function entriesToCSV(entries: HealthEntry[], weightUnit: WeightUnit, language: Language = 'en'): string {
   const showDisplayWeight = weightUnit === 'lb';
-  const headers = [
-    'date',
-    'morningSystolic',
-    'morningDiastolic',
-    'eveningSystolic',
-    'eveningDiastolic',
-    'restingHeartRate',
-    'weightKg',
-    ...(showDisplayWeight ? ['displayWeight', 'displayWeightUnit'] : []),
-    'notes',
-  ];
+  const isZh = language === 'zh';
+  const base = isZh ? HEADERS_ZH : HEADERS_EN;
+  const dwHeaders = isZh ? DISPLAY_WEIGHT_HEADERS_ZH : DISPLAY_WEIGHT_HEADERS_EN;
+  const headers = showDisplayWeight
+    ? [...base.slice(0, 7), ...dwHeaders, base[7]]
+    : [...base];
 
   const rows = [...entries]
     .sort((a, b) => a.date.localeCompare(b.date))

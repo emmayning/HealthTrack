@@ -98,7 +98,7 @@ const en: Record<string, string> = {
   'backup.sharedSuccess': 'Backup saved successfully!',
   'backup.downloadReady': 'Your backup file is ready.',
   'backup.downloadHint': 'Check your Downloads folder for the backup file.',
-  'backup.downloadHintIOS': 'On iPhone, tap the Share button and choose Save to Files.',
+  'backup.downloadHintIOS': 'Your file should appear in the Files app. If you don\'t see it, tap Share and choose "Save to Files."',
   'backup.cancelled': 'Backup was not saved. Tap Back Up My Data to try again.',
 
   // Restore

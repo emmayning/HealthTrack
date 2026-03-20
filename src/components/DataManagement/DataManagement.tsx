@@ -78,7 +78,7 @@ export default function DataManagement({
   // --- CSV ---
 
   const handleCSV = () => {
-    const csv = entriesToCSV(entries, weightUnit);
+    const csv = entriesToCSV(entries, weightUnit, lang);
     downloadCSV(csv);
   };
 
