@@ -85,6 +85,7 @@ export default function App() {
 
         <EntryForm
           onSave={save}
+          entries={entries}
           editingEntry={editingEntry}
           onCancelEdit={handleCancelEdit}
           weightUnit={settings.weightUnit}

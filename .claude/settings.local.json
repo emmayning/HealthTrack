@@ -11,7 +11,9 @@
       "Bash(rm -f src/assets/react.svg src/assets/vite.svg src/assets/hero.png)",
       "Bash(rmdir src/assets)",
       "mcp__Claude_Preview__preview_start",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\")",
+      "Bash(export PATH=\"/opt/homebrew/bin:$PATH\")"
     ]
   }
 }

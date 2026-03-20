@@ -8,6 +8,7 @@ import './EntryForm.css';
 
 interface Props {
   onSave: (entry: HealthEntry) => Promise<void>;
+  entries: HealthEntry[];
   editingEntry: HealthEntry | null;
   onCancelEdit: () => void;
   weightUnit: WeightUnit;
@@ -62,7 +63,7 @@ function entryToFormFields(entry: HealthEntry, weightUnit: WeightUnit) {
   };
 }
 
-export default function EntryForm({ onSave, editingEntry, onCancelEdit, weightUnit }: Props) {
+export default function EntryForm({ onSave, entries, editingEntry, onCancelEdit, weightUnit }: Props) {
   const { t, lang } = useTranslation();
   const [date, setDate] = useState(todayISO());
   const [morningSys, setMorningSys] = useState('');
@@ -75,8 +76,10 @@ export default function EntryForm({ onSave, editingEntry, onCancelEdit, weightUn
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [warnings, setWarnings] = useState<ValidationWarning[]>([]);
   const [saved, setSaved] = useState(false);
+  // Entry matched by date picker (as opposed to tap-to-edit via editingEntry)
+  const [autoEditEntry, setAutoEditEntry] = useState<HealthEntry | null>(null);
 
-  // Hydrate form when editingEntry changes
+  // Hydrate form when editingEntry changes (tap-to-edit flow)
   useEffect(() => {
     if (editingEntry) {
       const fields = entryToFormFields(editingEntry, weightUnit);
@@ -91,8 +94,37 @@ export default function EntryForm({ onSave, editingEntry, onCancelEdit, weightUn
       setErrors({});
       setWarnings([]);
       setSaved(false);
+      setAutoEditEntry(null);
     }
   }, [editingEntry, weightUnit]);
+
+  // Auto-fill when date picker matches an existing entry
+  useEffect(() => {
+    if (editingEntry) return; // tap-to-edit owns the form
+    const match = entries.find((e) => e.date === date) || null;
+    setAutoEditEntry(match);
+    if (match) {
+      const fields = entryToFormFields(match, weightUnit);
+      setMorningSys(fields.morningSys);
+      setMorningDia(fields.morningDia);
+      setEveningSys(fields.eveningSys);
+      setEveningDia(fields.eveningDia);
+      setHr(fields.hr);
+      setWeight(fields.weight);
+      setNotes(fields.notes);
+    } else {
+      setMorningSys('');
+      setMorningDia('');
+      setEveningSys('');
+      setEveningDia('');
+      setHr('');
+      setWeight('');
+      setNotes('');
+    }
+    setErrors({});
+    setWarnings([]);
+    setSaved(false);
+  }, [date, entries, editingEntry, weightUnit]);
 
   const resetForm = () => {
     setDate(todayISO());
@@ -162,6 +194,9 @@ export default function EntryForm({ onSave, editingEntry, onCancelEdit, weightUn
       // Exit edit mode, reset form, then briefly show success
       onCancelEdit();
       resetForm();
+    } else if (autoEditEntry) {
+      setAutoEditEntry(null);
+      resetForm();
     } else {
       resetForm();
     }
@@ -169,20 +204,21 @@ export default function EntryForm({ onSave, editingEntry, onCancelEdit, weightUn
     setSaved(true);
   };
 
-  const isEditing = editingEntry !== null;
+  const isEditing = editingEntry !== null || autoEditEntry !== null;
+  const isDateLocked = editingEntry !== null; // only lock date for tap-to-edit
 
   return (
     <div className={`entry-form${isEditing ? ' entry-form-editing' : ''}`}>
       <h2>{isEditing ? t('form.editTitle') : t('form.title')}</h2>
-      {isEditing && editingEntry && (
+      {isEditing && (
         <div className="form-editing-hint">
-          {t('form.editingDate', { date: toFullDate(editingEntry.date, lang) })}
+          {t('form.editingDate', { date: toFullDate((editingEntry ?? autoEditEntry)!.date, lang) })}
         </div>
       )}
 
       <div className="form-field">
         <label>{t('form.date')}</label>
-        {isEditing ? (
+        {isDateLocked ? (
           <div className="date-locked">{toFullDate(date, lang)}</div>
         ) : (
           <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
